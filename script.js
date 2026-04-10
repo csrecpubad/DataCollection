@@ -21,10 +21,22 @@ document.getElementById("birthday").addEventListener("change", function () {
     `${years} years ${months} months ${days} days`;
 });
 
-
 // SUBMIT FORM
 document.getElementById("form").addEventListener("submit", async function (e) {
   e.preventDefault();
+
+  let first = document.querySelector(
+    'select[name="preferFirstDistrict"]',
+  ).value;
+  let second = document.querySelector(
+    'select[name="preferSecondDistrict"]',
+  ).value;
+
+  if (first && second && first === second) {
+    document.getElementById("msg").innerHTML =
+      "❌ First and Second preferences cannot be the same";
+    return;
+  }
 
   let nic = document.getElementById("nic").value;
   let mobile = document.getElementById("mobile").value;
@@ -45,27 +57,31 @@ document.getElementById("form").addEventListener("submit", async function (e) {
 
   // FIX CHECKBOX
   let selectedDistricts = [];
-  document.querySelectorAll('input[name="selectedDistricts"]:checked')
-    .forEach(el => selectedDistricts.push(el.value));
+  document
+    .querySelectorAll('input[name="selectedDistricts"]:checked')
+    .forEach((el) => selectedDistricts.push(el.value));
 
-const data = {};
+  const data = {};
 
-// manually collect ALL fields correctly
-formData.forEach((value, key) => {
-  data[key] = value;
-});
+  // manually collect ALL fields correctly
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
 
-// DEBUG (VERY IMPORTANT)
-console.log("FINAL DATA:", data);
+  // DEBUG (VERY IMPORTANT)
+  console.log("FINAL DATA:", data);
 
   document.getElementById("msg").innerHTML = "Submitting...";
 
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbzgQY11v5hKBNomfOcpcVcrXAgjtJrbMcPOXUeBzl3c-9rV1SGeg49KDgmgtPexjpZC5g/exec", {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-      console.log(data);
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbzgQY11v5hKBNomfOcpcVcrXAgjtJrbMcPOXUeBzl3c-9rV1SGeg49KDgmgtPexjpZC5g/exec",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      },
+    );
+    console.log(data);
     const result = await response.json();
 
     if (result.status === "success") {
@@ -74,7 +90,6 @@ console.log("FINAL DATA:", data);
     } else {
       document.getElementById("msg").innerHTML = "❌ Failed";
     }
-
   } catch (error) {
     document.getElementById("msg").innerHTML = "❌ Error";
   }
